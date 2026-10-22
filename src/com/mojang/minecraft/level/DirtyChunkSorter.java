@@ -1,0 +1,46 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
+package com.mojang.minecraft.level;
+
+import com.mojang.minecraft.Player;
+import com.mojang.minecraft.level.Chunk;
+import com.mojang.minecraft.renderer.Frustum;
+import java.util.Comparator;
+
+/*
+ * This class specifies class file version 49.0 but uses Java 6 signatures.  Assumed Java 6.
+ */
+public class DirtyChunkSorter
+implements Comparator<Chunk> {
+    private Player player;
+    private Frustum frustum;
+    private long now = System.currentTimeMillis();
+
+    public DirtyChunkSorter(Player player, Frustum frustum) {
+        this.player = player;
+        this.frustum = frustum;
+    }
+
+    @Override
+    public int compare(Chunk c0, Chunk c1) {
+        boolean i0 = this.frustum.isVisible(c0.aabb);
+        boolean i1 = this.frustum.isVisible(c1.aabb);
+        if (i0 && !i1) {
+            return -1;
+        }
+        if (i1 && !i0) {
+            return 1;
+        }
+        int t0 = (int)((this.now - c0.dirtiedTime) / 2000L);
+        int t1 = (int)((this.now - c1.dirtiedTime) / 2000L);
+        if (t0 < t1) {
+            return -1;
+        }
+        if (t0 > t1) {
+            return 1;
+        }
+        return c0.distanceToSqr(this.player) < c1.distanceToSqr(this.player) ? -1 : 1;
+    }
+}
+

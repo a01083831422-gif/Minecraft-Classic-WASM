@@ -1,0 +1,2 @@
+Summary for client.jar
+Decompiled with CFR 0.152
